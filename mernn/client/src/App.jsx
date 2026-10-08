@@ -13,7 +13,14 @@ useEffect(() => {
        setstudents(response.data);
       });
   }, []);
+//store inpu
+  const handleChange = (e) => {
 
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  };
 
   //ADD
 
@@ -22,7 +29,7 @@ useEffect(() => {
     <div>
       <h1>Student Management System</h1>
         <h2>Students</h2>
-     <form onSubmit={handleSubmit}>
+    
        <form onSubmit={handleSubmit}>
 
         <input
