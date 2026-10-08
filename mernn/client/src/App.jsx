@@ -4,20 +4,17 @@ import { useEffect, useState } from "react";
 function App() {
   const [students, setStudents] = useState([]);
 
-  // Form data
   const [formData, setFormData] = useState({
     name: "",
     course: "",
     age: "",
   });
 
-  // Editing state
   const [editingId, setEditingId] = useState(null);
 
-  // GET students
   useEffect(() => {
     axios
-      .get("https://vergara-a-prac-exam-server.vercel.app/students")
+      .get("https://vergara-a-prac-exam-fjsj.vercel.app/students")
       .then((response) => {
         setStudents(response.data);
       })
@@ -26,7 +23,6 @@ function App() {
       });
   }, []);
 
-  // Store input values
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -34,7 +30,6 @@ function App() {
     });
   };
 
-  // Edit student
   const handleEdit = (student) => {
     setEditingId(student._id);
 
@@ -45,15 +40,13 @@ function App() {
     });
   };
 
-  // Add or Update student
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // UPDATE
     if (editingId) {
       axios
         .put(
-          `https://vergara-a-prac-exam-server.vercel.app/students/${editingId}`,
+          `https://vergara-a-prac-exam-fjsj.vercel.app/students/${editingId}`,
           formData
         )
         .then((response) => {
@@ -65,7 +58,6 @@ function App() {
             )
           );
 
-          // Clear form
           setFormData({
             name: "",
             course: "",
@@ -81,10 +73,9 @@ function App() {
           alert("Error updating student");
         });
     } else {
-      // ADD
       axios
         .post(
-          "https://vergara-a-prac-exam-server.vercel.app/students",
+          "https://vergara-a-prac-exam-fjsj.vercel.app/students",
           formData
         )
         .then((response) => {
@@ -93,7 +84,6 @@ function App() {
             response.data.student,
           ]);
 
-          // Clear form
           setFormData({
             name: "",
             course: "",
@@ -109,11 +99,10 @@ function App() {
     }
   };
 
-  // Delete student
   const handleDelete = (id) => {
     axios
       .delete(
-        `https://vergara-a-prac-exam-server.vercel.app/students/${id}`
+        `https://vergara-a-prac-exam-fjsj.vercel.app/students/${id}`
       )
       .then(() => {
         setStudents(
@@ -128,7 +117,6 @@ function App() {
       });
   };
 
-  // Cancel editing
   const handleCancel = () => {
     setEditingId(null);
 
@@ -147,7 +135,6 @@ function App() {
         {editingId ? "Edit Student" : "Add Student"}
       </h2>
 
-      {/* ADD / EDIT FORM */}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -188,7 +175,6 @@ function App() {
           {editingId ? "Update Student" : "Add Student"}
         </button>
 
-        {/* Show Cancel only when editing */}
         {editingId && (
           <button
             type="button"
