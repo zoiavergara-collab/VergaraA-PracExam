@@ -3,6 +3,13 @@ import axios from "axios";
 
 function App() {
 const [students, setstudents] = useState([])
+ 
+const [formData, setFormData] = useState({
+    name: "",
+    course: "",
+    age: ""
+  });
+
   
 useEffect(() => {
  
