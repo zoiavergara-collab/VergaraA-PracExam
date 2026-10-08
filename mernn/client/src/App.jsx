@@ -1,31 +1,54 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
-
-function App() {
-const [students, setstudents] = useState([])
-
-  //get 
-useEffect(() => {
+import { useEffect, useState } from "react";
  
-  axios
+function App() {
+  const [students, setStudents] = useState([]);
+ 
+  // Form data
+  const [formData, setFormData] = useState({
+    name: "",
+    course: "",
+    age: ""
+  });
+ 
+  // Editing state
+  const [editingId, setEditingId] = useState(null);
+ 
+  // GET students
+  useEffect(() => {
+    axios
       .get("http://localhost:5000/students")
       .then((response) => {
-       setstudents(response.data);
+        setStudents(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching students:", error);
       });
   }, []);
-//store input
+ 
+  // Store input values
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
-    })
+    });
   };
-
-  //ADD
+ 
+  // Edit student
+  const handleEdit = (student) => {
+    setEditingId(student._id);
+ 
+    setFormData({
+      name: student.name,
+      course: student.course,
+      age: student.age
+    });
+  };
+ 
+  // Add or Update student
   const handleSubmit = (e) => {
     e.preventDefault();
-
+ 
     // UPDATE
     if (editingId) {
       axios
@@ -41,19 +64,23 @@ useEffect(() => {
                 : student
             )
           );
-
-          // Exit editing mode
-          setEditingId(null);
-
-       
-
+ 
+      
+ 
+          // Clear form
+          setFormData({
+            name: "",
+            course: "",
+            age: ""
+          });
+ 
           alert("Student updated successfully");
         })
         .catch((error) => {
           console.error("Error updating student:", error);
           alert("Error updating student");
         });
-
+ 
     } else {
       // ADD
       axios
@@ -63,14 +90,14 @@ useEffect(() => {
             ...students,
             response.data.student
           ]);
-
+ 
           // Clear form
           setFormData({
             name: "",
             course: "",
             age: ""
           });
-
+ 
           alert("Student added successfully");
         })
         .catch((error) => {
@@ -79,15 +106,46 @@ useEffect(() => {
         });
     }
   };
-
-
+ 
+  // Delete student
+   const handleDelete = (id) => {
+    axios
+      .delete(`http://localhost:5000/students/${id}`)
+      .then(() => {
+        setStudents(
+          students.filter((student) => student._id !== id)
+        );
+ 
+        alert("Student deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Error deleting student:", error);
+        alert("Error deleting student");
+      });
+  };
+ 
+  // Cancel editing
+  const handleCancel = () => {
+    setEditingId(null);
+ 
+    setFormData({
+      name: "",
+      course: "",
+      age: ""
+    });
+  };
+ 
   return (
     <div>
       <h1>Student Management System</h1>
-        <h2>Students</h2>
-    
-       <form onSubmit={handleSubmit}>
-
+ 
+      <h2>
+        {editingId ? "Edit Student" : "Add Student"}
+      </h2>
+ 
+      {/* ADD / EDIT FORM */}
+      <form onSubmit={handleSubmit}>
+ 
         <input
           type="text"
           name="name"
@@ -97,9 +155,9 @@ useEffect(() => {
           minLength="3"
           required
         />
-
+ 
         <br />
-
+ 
         <input
           type="text"
           name="course"
@@ -109,9 +167,9 @@ useEffect(() => {
           minLength="2"
           required
         />
-
+ 
         <br />
-
+ 
         <input
           type="number"
           name="age"
@@ -120,32 +178,56 @@ useEffect(() => {
           onChange={handleChange}
           required
         />
-
+ 
         <br />
-
+ 
         <button type="submit">
           {editingId ? "Update Student" : "Add Student"}
         </button>
-       </form>
-       
-       
-       
-       
-       
-       
-       
-        {students.map((student) =>(
-         
-         <div key = {students.id}>
-            <p>Name: {student.name}</p>
-             <p>Course: {student.course}</p>
-              <p>Age: {student.age}</p>
-            </div>
-        )
-        )
-        }
+ 
+        {/* Show Cancel only when editing */}
+        {editingId && (
+          <button
+            type="button"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+        )}
+ 
+      </form>
+ 
+      <br />
+ 
+      <h2>Students</h2>
+ 
+      {students.map((student) => (
+        <div key={student._id}>
+ 
+          <p>Name: {student.name}</p>
+          <p>Course: {student.course}</p>
+          <p>Age: {student.age}</p>
+ 
+          <button
+            type="button"
+            onClick={() => handleEdit(student)}
+          >
+            Edit
+          </button>
+ 
+          <button
+            type="button"
+            onClick={() => handleDelete(student._id)}
+          >
+            Delete
+          </button>
+ 
+          <hr />
+ 
+        </div>
+      ))}
     </div>
   );
 }
-
+ 
 export default App;
