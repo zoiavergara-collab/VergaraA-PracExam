@@ -13,7 +13,7 @@ useEffect(() => {
        setstudents(response.data);
       });
   }, []);
-//store inpu
+//store input
   const handleChange = (e) => {
 
     setFormData({
@@ -23,6 +23,62 @@ useEffect(() => {
   };
 
   //ADD
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // UPDATE
+    if (editingId) {
+      axios
+        .put(
+          `http://localhost:5000/students/${editingId}`,
+          formData
+        )
+        .then((response) => {
+          setStudents(
+            students.map((student) =>
+              student._id === editingId
+                ? response.data.student
+                : student
+            )
+          );
+
+          // Exit editing mode
+          setEditingId(null);
+
+       
+
+          alert("Student updated successfully");
+        })
+        .catch((error) => {
+          console.error("Error updating student:", error);
+          alert("Error updating student");
+        });
+
+    } else {
+      // ADD
+      axios
+        .post("http://localhost:5000/students", formData)
+        .then((response) => {
+          setStudents([
+            ...students,
+            response.data.student
+          ]);
+
+          // Clear form
+          setFormData({
+            name: "",
+            course: "",
+            age: ""
+          });
+
+          alert("Student added successfully");
+        })
+        .catch((error) => {
+          console.error("Error adding student:", error);
+          alert("Error adding student");
+        });
+    }
+  };
 
 
   return (
