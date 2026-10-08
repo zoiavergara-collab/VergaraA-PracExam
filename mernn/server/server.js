@@ -14,30 +14,23 @@ app.get("/", (req, res) => {
     res.send("Server is running!");
 });
 
-//create
-app.post("/api/students", async (req, res) => {
-  try {
-    const { name, course, age } = req.body;
+app.post("/students", async (req,res)=> {
+try{
+  const{name, course, age} = req.body;
 
-    const newStudent = new Student({
-      name,
-      course,
-      age,
-      
-    });
+  const newStudent =new Student({
+    name, course, age });
+  await newStudent();
+  res.status(201).json({
+    message:"student added", student:newStudent,
+  });
+} catch (error){
+  res.status(400).json({
+    message:"error adding student",
+    error:error.message,
 
-    await newStudent.save();
-
-    res.status(201).json({
-      message: "Student added successfully",
-      student: newStudent,
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Error adding student",
-      error: error.message,
-    });
-  }
+  });
+}
 });
 
 
