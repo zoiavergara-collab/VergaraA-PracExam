@@ -14,14 +14,16 @@ app.get("/", (req, res) => {
     res.send("Server is running!");
 });
 
-app.post("/students", async (req, res) => {
+//create
+app.post("/api/students", async (req, res) => {
   try {
     const { name, course, age } = req.body;
 
     const newStudent = new Student({
       name,
       course,
-      age
+      age,
+      
     });
 
     await newStudent.save();
@@ -39,6 +41,32 @@ app.post("/students", async (req, res) => {
 });
 
 
+app.get("/students", async (req, res) => {
+    const students = await Student.find();
+    res.json(students);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -47,10 +75,6 @@ app.listen(5000, () => {
 });
 
 
-app.get("/students", async (req, res) => {
-    const students = await Student.find();
-    res.json(students);
-});
 
 mongoose
   .connect(process.env.MONGO_URI)
