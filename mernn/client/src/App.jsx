@@ -1,23 +1,23 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
- 
+
 function App() {
   const [students, setStudents] = useState([]);
- 
+
   // Form data
   const [formData, setFormData] = useState({
     name: "",
     course: "",
-    age: ""
+    age: "",
   });
- 
+
   // Editing state
   const [editingId, setEditingId] = useState(null);
- 
+
   // GET students
   useEffect(() => {
     axios
-      .get("http://localhost:5000/students")
+      .get("https://vergara-a-prac-exam-server.vercel.app/students")
       .then((response) => {
         setStudents(response.data);
       })
@@ -25,35 +25,35 @@ function App() {
         console.error("Error fetching students:", error);
       });
   }, []);
- 
+
   // Store input values
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
- 
+
   // Edit student
   const handleEdit = (student) => {
     setEditingId(student._id);
- 
+
     setFormData({
       name: student.name,
       course: student.course,
-      age: student.age
+      age: student.age,
     });
   };
- 
+
   // Add or Update student
   const handleSubmit = (e) => {
     e.preventDefault();
- 
+
     // UPDATE
     if (editingId) {
       axios
         .put(
-          `http://localhost:5000/students/${editingId}`,
+          `https://vergara-a-prac-exam-server.vercel.app/students/${editingId}`,
           formData
         )
         .then((response) => {
@@ -64,40 +64,42 @@ function App() {
                 : student
             )
           );
- 
-      
- 
+
           // Clear form
           setFormData({
             name: "",
             course: "",
-            age: ""
+            age: "",
           });
- 
+
+          setEditingId(null);
+
           alert("Student updated successfully");
         })
         .catch((error) => {
           console.error("Error updating student:", error);
           alert("Error updating student");
         });
- 
     } else {
       // ADD
       axios
-        .post("http://localhost:5000/students", formData)
+        .post(
+          "https://vergara-a-prac-exam-server.vercel.app/students",
+          formData
+        )
         .then((response) => {
           setStudents([
             ...students,
-            response.data.student
+            response.data.student,
           ]);
- 
+
           // Clear form
           setFormData({
             name: "",
             course: "",
-            age: ""
+            age: "",
           });
- 
+
           alert("Student added successfully");
         })
         .catch((error) => {
@@ -106,16 +108,18 @@ function App() {
         });
     }
   };
- 
+
   // Delete student
-   const handleDelete = (id) => {
+  const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:5000/students/${id}`)
+      .delete(
+        `https://vergara-a-prac-exam-server.vercel.app/students/${id}`
+      )
       .then(() => {
         setStudents(
           students.filter((student) => student._id !== id)
         );
- 
+
         alert("Student deleted successfully");
       })
       .catch((error) => {
@@ -123,29 +127,28 @@ function App() {
         alert("Error deleting student");
       });
   };
- 
+
   // Cancel editing
   const handleCancel = () => {
     setEditingId(null);
- 
+
     setFormData({
       name: "",
       course: "",
-      age: ""
+      age: "",
     });
   };
- 
+
   return (
     <div>
       <h1>Student Management System</h1>
- 
+
       <h2>
         {editingId ? "Edit Student" : "Add Student"}
       </h2>
- 
+
       {/* ADD / EDIT FORM */}
       <form onSubmit={handleSubmit}>
- 
         <input
           type="text"
           name="name"
@@ -155,9 +158,9 @@ function App() {
           minLength="3"
           required
         />
- 
+
         <br />
- 
+
         <input
           type="text"
           name="course"
@@ -167,9 +170,9 @@ function App() {
           minLength="2"
           required
         />
- 
+
         <br />
- 
+
         <input
           type="number"
           name="age"
@@ -178,13 +181,13 @@ function App() {
           onChange={handleChange}
           required
         />
- 
+
         <br />
- 
+
         <button type="submit">
           {editingId ? "Update Student" : "Add Student"}
         </button>
- 
+
         {/* Show Cancel only when editing */}
         {editingId && (
           <button
@@ -194,40 +197,37 @@ function App() {
             Cancel
           </button>
         )}
- 
       </form>
- 
+
       <br />
- 
+
       <h2>Students</h2>
- 
+
       {students.map((student) => (
         <div key={student._id}>
- 
           <p>Name: {student.name}</p>
           <p>Course: {student.course}</p>
           <p>Age: {student.age}</p>
- 
+
           <button
             type="button"
             onClick={() => handleEdit(student)}
           >
             Edit
           </button>
- 
+
           <button
             type="button"
             onClick={() => handleDelete(student._id)}
           >
             Delete
           </button>
- 
+
           <hr />
- 
         </div>
       ))}
     </div>
   );
 }
- 
+
 export default App;
